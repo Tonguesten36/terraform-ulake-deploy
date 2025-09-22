@@ -1,0 +1,9 @@
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6
+
+WORKDIR /home
+
+COPY /log-1.0.0-runner /home/ulake-service-log-runner
+
+RUN chmod +x /home/ulake-service-log-runner
+
+ENTRYPOINT ["/home/ulake-service-log-runner"]
