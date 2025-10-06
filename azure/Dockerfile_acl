@@ -1,0 +1,9 @@
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6
+
+WORKDIR /home
+
+COPY /acl-1.0.0-SNAPSHOT-runner /home/ulake-service-acl-runner
+
+RUN chmod +x /home/ulake-service-acl-runner
+
+ENTRYPOINT ["/home/ulake-service-acl-runner"]

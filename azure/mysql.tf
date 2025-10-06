@@ -9,12 +9,19 @@ resource "azurerm_mysql_flexible_server" "mysql" {
 
   delegated_subnet_id = azurerm_subnet.mysql_subnet.id
 
+  private_dns_zone_id = azurerm_private_dns_zone.mysql_dns_zone.id
+
   storage {
     size_gb = 20
   }
   backup_retention_days = 7
 
-  depends_on = [azurerm_subnet.mysql_subnet, azurerm_virtual_network.ulake_vnet]
+  depends_on = [ 
+    azurerm_subnet.mysql_subnet, 
+    azurerm_virtual_network.ulake_vnet, 
+    azurerm_private_dns_zone.mysql_dns_zone, 
+    azurerm_private_dns_zone_virtual_network_link.ulake_dns_zone_link
+  ]
 }
 
 resource "azurerm_mysql_flexible_database" "ulake_log_db" {
@@ -37,14 +44,33 @@ resource "azurerm_mysql_flexible_database" "ulake_user_db" {
   depends_on = [azurerm_mysql_flexible_server.mysql]
 }
 
-# Consider using cli instead of manually create database
-# az mysql flexible-server execute \
-#     --name <server_name> \
-#     --admin-user <username> \
-#     --admin-password <password> \
-#     --database-name <database_name> \
-#     --file-path script.sql
+resource "azurerm_mysql_flexible_database" "ulake_acl_db" {
+  name                = "ulake-acl"
+  server_name         = azurerm_mysql_flexible_server.mysql.name
+  resource_group_name = azurerm_resource_group.ulake_rg.name
+  charset             = "utf8mb4"
+  collation           = "utf8mb4_unicode_ci"
 
+  depends_on = [azurerm_mysql_flexible_server.mysql]
+}
+resource "azurerm_mysql_flexible_database" "ulake_folder_db" {
+  name                = "ulake-folder"
+  server_name         = azurerm_mysql_flexible_server.mysql.name
+  resource_group_name = azurerm_resource_group.ulake_rg.name
+  charset             = "utf8mb4"
+  collation           = "utf8mb4_unicode_ci"
+
+  depends_on = [azurerm_mysql_flexible_server.mysql]
+}
+resource "azurerm_mysql_flexible_database" "ulake_core_db" {
+  name                = "ulake-core"
+  server_name         = azurerm_mysql_flexible_server.mysql.name
+  resource_group_name = azurerm_resource_group.ulake_rg.name
+  charset             = "utf8mb4"
+  collation           = "utf8mb4_unicode_ci"
+
+  depends_on = [azurerm_mysql_flexible_server.mysql]
+}
 
 # It allows your MySQL server to be accessed via a consistent hostname (ulake-mysql.privatelink.mysql.database.azure.com)
 # rather than relying on a potentially changing private IP address

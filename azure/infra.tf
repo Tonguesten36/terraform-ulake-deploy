@@ -43,3 +43,9 @@ resource "azurerm_subnet" "mysql_subnet" {
 
   depends_on = [azurerm_virtual_network.ulake_vnet]
 }
+
+resource "azurerm_user_assigned_identity" "ulake_container_identity" {
+  location            = azurerm_resource_group.ulake_rg.location
+  name                = "ulake-container-identity"
+  resource_group_name = azurerm_resource_group.ulake_rg.name
+}

@@ -17,15 +17,20 @@ resource "azurerm_role_assignment" "acr_pull" {
 }
 
 resource "null_resource" "push_images" {
-  depends_on = [azurerm_container_registry.acr]
+  depends_on = [azurerm_container_registry.acr, azurerm_role_assignment.acr_pull]
 
   provisioner "local-exec" {
     command = <<EOT
-      az acr login --name ulake 
+      sleep 5;
+      az acr login --name ${azurerm_container_registry.acr.name} ;
 
-      docker push ulake.azurecr.io/ulake-nginx:latest
-      docker push ulake.azurecr.io/ulake-service-log:latest
-      docker push ulake.azurecr.io/ulake-service-user:latest
+      docker push ulake.azurecr.io/ulake-nginx:latest;
+      docker push ulake.azurecr.io/ulake-service-log:latest;
+      docker push ulake.azurecr.io/ulake-service-user:latest;
+      docker push ulake.azurecr.io/ulake-service-acl:latest;
+      docker push ulake.azurecr.io/ulake-service-dashboard:latest;
+      docker push ulake.azurecr.io/ulake-service-folder:latest;
+      docker push ulake.azurecr.io/ulake-service-core:latest
     EOT
   }
 }

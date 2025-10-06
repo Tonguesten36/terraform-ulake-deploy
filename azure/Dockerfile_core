@@ -1,0 +1,9 @@
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6
+
+WORKDIR /home
+
+COPY /core-1.0.0-SNAPSHOT-runner /home/ulake-service-core-runner
+
+RUN chmod +x /home/ulake-service-core-runner
+
+ENTRYPOINT ["/home/ulake-service-core-runner"]

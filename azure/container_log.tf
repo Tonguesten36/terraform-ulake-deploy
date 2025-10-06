@@ -42,7 +42,6 @@ resource "azurerm_container_app" "log_service" {
 
   depends_on = [
     azurerm_container_app_environment.env,
-    azurerm_storage_account.ulake_store,
     azurerm_user_assigned_identity.ulake_container_identity
   ]
 }

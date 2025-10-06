@@ -22,20 +22,6 @@ resource "azurerm_container_app" "nginx_service" {
         path = "/etc/nginx"
       }
     }
-
-    volume {
-      name          = "html"
-      storage_name  = azurerm_storage_account.ulake_store.name
-      storage_type  = "AzureFile"
-      mount_options = "dir_mode=0755,file_mode=0755"
-    }
-
-    volume {
-      name          = "conf"
-      storage_name  = azurerm_storage_account.ulake_store.name
-      storage_type  = "AzureFile"
-      mount_options = "dir_mode=0755,file_mode=0644"
-    }
   }
 
   ingress {
@@ -55,9 +41,7 @@ resource "azurerm_container_app" "nginx_service" {
 
   depends_on = [
     azurerm_container_app_environment.env,
-    azurerm_storage_account.ulake_store,
-    null_resource.push_nginx_image,
-    null_resource.upload_nginx_conf,
-    null_resource.upload_nginx_html
+    azurerm_user_assigned_identity.ulake_container_identity,
+    azurerm_container_app.log_service
   ]
 }
